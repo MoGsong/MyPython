@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="origin-when-crossorigin" />
+    <meta name="description" content="（kali）Linux更换源(其他源也可通过这种方式添加) 1.进入源列表文件夹 可能不同的Linux下文件夹的结构不同，可以通过一级一级向下递进找到sources.list。 sudo cd /et" />
+    <meta property="og:description" content="（kali）Linux更换源(其他源也可通过这种方式添加) 1.进入源列表文件夹 可能不同的Linux下文件夹的结构不同，可以通过一级一级向下递进找到sources.list。 sudo cd /et" />
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>linux添加、更换源 - 善不碰 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="//common.cnblogs.com/favicon.svg" type="image/svg+xml" />
+    
+    <link rel="stylesheet" href="/css/blog-common.min.css?v=T3qda32WPAJnJeCcMKhkDtUcm1SzcInQFuiLbTe7cHI" />
+    <link id="MainCss" rel="stylesheet" href="/skins/mountainink/bundle-mountainink.min.css?v=J87U-ocWJ9KtApKHMmdL5wCun-udAA8_AEHqkLSEzBQ" />
+    <link type="text/css" rel="stylesheet" href="/css/hljs/cnblogs.css?v=2spjdq1Snjw5rAm9auWVRax8Gb7nftS4ORu-8fQ7JGM" />
+    <link type="text/css" rel="stylesheet" href="https://www.cnblogs.com/xyz-6996/custom.css?v=716wIEqRcoVq40IWOAVDGswjo8c=" />
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/mountainink/bundle-mountainink-mobile.min.css?v=FbWAojti4hapFp0LXITskgKBeOZgAgZZV3IgLxaJX08" />
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/xyz-6996/rss" />
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/xyz-6996/rsd.xml" />
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/xyz-6996/wlwmanifest.xml" />
+    <script>
+        var currentBlogId = 642893;
+        var currentBlogApp = 'xyz-6996';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'MountainInk';
+        var visitorUserId = '';
+        var hasCustomScript = true;
+        try {
+            if (hasCustomScript && document.referrer && document.referrer.indexOf('baidu.com') >= 0) {
+                Object.defineProperty(document, 'referrer', { value: '' });
+                Object.defineProperty(Document.prototype, 'referrer', { get: function(){ return ''; } });
+            }
+        } catch(error) { }
+    </script>
+        <script>
+            var currentPostDateAdded = '2020-12-02 08:58';
+        </script>
+    <script src="https://common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script src="/js/blog-common.min.js?v=vnK_3xFGPzj7Od94__O4wSw3tC-osH4qj1NMKyuZpX8"></script>
+    
+    
+    
+    <script type="text/javascript">
+        window.codeHighlightEngine = 1
+        window.enableCodeLineNumber = false
+    </script>
+</head>
+<body class="skin-mountainink has-navbar has-bannerbar">
+    <a name="top"></a>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="/images/logo.svg?v=R9M0WmLAIPVydmdzE2keuvnjl-bPR7_35oHqtiBzGsM" alt="博客园Logo" /></a></li>
+                <li><a href="/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3" />
+                        <button type="submit" id="zzk_search_button">
+                            <img src="/images/aggsite/search.svg" alt="搜索" />
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔">
+                        <img id="new_post_icon" class="navbar-icon" src="/images/aggsite/newpost.svg" alt="写随笔" />
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客">
+                        <img id="myblog_icon" class="navbar-icon" src="/images/aggsite/myblog.svg" alt="我的博客" />
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息">
+                        <img id="msg_icon" class="navbar-icon" src="/images/aggsite/message.svg?v=J0WS2P2iPgaIVgXxcAhliw4AFZIpaTWxtdoNAv9eiCA" alt="短消息" />
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="/images/aggsite/avatar-default.svg" alt="用户头像" />
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <img id="navbar_lite_mode_on" src="/images/lite-mode-check.svg" class="hide" /><span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div id="page_begin_html">
+        <link rel="stylesheet" type="text/css" href="https://files.cnblogs.com/files/xyz-6996/waifu.css"/>
+    </div>
+    <!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/xyz-6996/"><img id="blogLogo" src="/skins/custom/images/logo.gif" alt="返回主页" /></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/xyz-6996/">不~善 ~呦</a>
+</h1>
+<h2>Life is best.Life is worst.</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/xyz-6996/">
+首页</a>
+</li>
+<li>
+
+
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E5%96%84%E4%B8%8D%E7%A2%B0">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/xyz-6996/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			<div id="blog_stats_place_holder"><script>loadBlogStats();</script></div>
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class = "postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/xyz-6996/p/14071851.html">
+    <span>linux添加、更换源</span>
+    
+
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                    <div id="cnblogs_post_description" style="display: none">
+        
+        <img src="https://images.cnblogs.com/cnblogs_com/xyz-6996/1925050/o_21012914233158969404_p0.jpg" class="desc_img">
+Linux sources add and change
+    </div>
+<div id="cnblogs_post_body" class="blogpost-body cnblogs-markdown">
+<h1 id="（kali）linux更换源其他源也可通过这种方式添加">（kali）Linux更换源(其他源也可通过这种方式添加)</h1>
+<p></p><div class="toc"><div class="toc-container-header">目录</div><ul><li><a href="#（kali）linux更换源其他源也可通过这种方式添加">（kali）Linux更换源(其他源也可通过这种方式添加)</a><ul><li><a href="#1进入源列表文件夹">1.进入源列表文件夹</a></li></ul><ul><li><a href="#2-打开这个网站，复制源的链接。">2. 打开这个网站，复制源的链接。</a></li><li><a href="#3-回到linux，打开sourceslist文件">3. 回到Linux，打开sources.list文件</a></li><li><a href="#4进入插入模式（点击i进入编辑模式）">4.进入插入模式（点击‘i’进入编辑模式）</a></li><li><a href="#5然后esc退出编辑模式，点击：输入wq进行保存并退出（write-，quit）。">5.然后Esc退出编辑模式，点击‘：’输入‘wq’进行保存并退出（write ，quit）。</a></li><li><a href="#6-输入下列命令进行一些更新。">6. 输入下列命令进行一些更新。</a></li></ul></li></ul></div><p></p>
+<hr>
+<h3 id="1进入源列表文件夹">1.进入源列表文件夹</h3>
+<ul>
+<li>可能不同的Linux下文件夹的结构不同，可以通过一级一级向下递进找到sources.list。</li>
+</ul>
+<pre><code>sudo cd /etc/apt/sources.list
+</code></pre>
+<h2 id="2-打开point_right这个point_left网站，复制源的链接。">2. 打开👉<a href="https://developer.aliyun.com/mirror/kali?spm=a2c6h.13651102.0.0.1d231b115YDKhc" target="_blank">这个</a>👈网站，复制源的链接。</h2>
+<ul>
+<li><img src="https://images.cnblogs.com/cnblogs_com/xyz-6996/1892056/o_201202004218QQ%E6%88%AA%E5%9B%BE20201202083650.png" alt="" loading="lazy"></li>
+</ul>
+<h2 id="3-回到linux，打开sourceslist文件">3. 回到Linux，打开sources.list文件</h2>
+<pre><code>sudo vi sources.list
+</code></pre>
+<h2 id="4进入插入模式（点击i进入编辑模式）">4.进入插入模式（点击‘i’进入编辑模式）</h2>
+<hr>
+<p>如果3中没有管理员权限会保存失败。</p>
+<hr>
+<p>下图为一个所有源都删除的截图。</p>
+<p><img src="https://images.cnblogs.com/cnblogs_com/xyz-6996/1892056/o_201202004148QQ%E5%9B%BE%E7%89%8720201201230101.png" alt="" loading="lazy"></p>
+<p>然后删除其他源，如果原来就没有的话直接添加进去（Linux命令行中Ctrl+shift+v复制）。</p>
+<p><img src="https://images.cnblogs.com/cnblogs_com/xyz-6996/1892056/o_201202004140QQ%E6%88%AA%E5%9B%BE20201201230702.png" alt="" loading="lazy"></p>
+<h2 id="5然后esc退出编辑模式，点击：输入wq进行保存并退出（write-，quit）。">5.然后Esc退出编辑模式，点击‘：’输入‘wq’进行保存并退出（write ，quit）。</h2>
+<h2 id="6-输入下列命令进行一些更新。">6. 输入下列命令进行一些更新。</h2>
+<pre><code>sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+sudo apt-get clean
+</code></pre>
+
+</div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+    <div id="blog_post_info"></div>
+    <div class="clear"></div>
+    <div id="post_next_prev"></div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2020-12-02 08:58</span>&nbsp;
+<a href="https://www.cnblogs.com/xyz-6996/">善不碰</a>&nbsp;
+阅读(<span id="post_view_count">989</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=14071851" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(14071851);return false;">收藏</a>&nbsp;
+<a href="javascript:void(0)" onclick="reportManager.report({ currentUserId: '', targetType: 'blogPost', targetId: '14071851', targetLink: 'https://www.cnblogs.com/xyz-6996/p/14071851.html', title: 'linux添加、更换源' })">举报</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+
+<script src="https://common.cnblogs.com/highlight/10.3.1/highlight.min.js" async onload="markdown_highlight()"></script>
+<script>
+    var allowComments = true, cb_blogId = 642893, cb_blogApp = 'xyz-6996', cb_blogUserGuid = '7ec59f67-22e4-4666-274a-08d87b2246c2';
+    var cb_entryId = 14071851, cb_entryCreatedDate = '2020-12-02 08:58', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");
+</script>
+
+<a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container"></div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card">
+             <a onclick="ga('send', 'event', 'Link', 'click', 'Pangle-C1')" target="_blank" rel="nofollow" href="https://c.gridsumdissector.com/r/?gid=gad_545_ph4hkwzt&ck=32&adk=442&autorefresh=__AUTOREFRESH__">
+                <img style="width: 300px; height: 250px;" src="https://img2020.cnblogs.com/blog/35695/202108/35695-20210817131346802-930113090.jpg" alt="" onload="gscmdImpress()" />
+             </a>
+    </div>
+    <div id="under_post_card1"></div>
+    <div id="under_post_card2"></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem">
+            <script>loadBlogNews();</script>
+</div>
+<div id="sidebar_c3"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		<!--done-->
+Copyright &copy; 2021 善不碰
+<br /><span id="poweredby">Powered by .NET 6 on Kubernetes</span>
+
+
+
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8NACB8VE9qlHm6Ujjqxvg5C-tGFGLj2MWXMaawe-olS1q5pWKVplWMX2_ZxxfnVAMVnr1DYN3SniSvinfxBhVaSFxNfSsJw293en8gAWrOBtVbrgfjwxa_QxtwBe6fYfmTv966ONvJb9cbFKLdGtMD0" />
+</body>
+</html>

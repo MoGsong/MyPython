@@ -1,0 +1,213 @@
+robots.txt
+识别验证码图片中的数据，用于模拟登陆
+1.人工肉眼识别（眼睛看）  不推荐 效率低
+2.第三方自动识别
+    -云打码  www.yundama.com/demo.html 改为  超级鹰（要钱）    bobo328410948
+    -tesserocr  tesseract
+        -注册：普通和开发者
+        -登录普通用户
+        -开发者登录：
+            1创建软件-》添加新软件-》新软件名   （软件id 和 密钥）
+            2开发文档下载示例代码-》下载云代码接口Dll-》pyhttp实例下载
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#-*-coding:utf-8-*-
+from PIL import Image
+
+def test(path):
+    img=Image.open(path)
+    w,h=img.size
+    for x in range(w):
+        for y in range(h):
+            r,g,b=img.getpixel((x,y))
+            if 190<=r<=255 and 170<=g<=255 and 0<=b<=140:
+                img.putpixel((x,y),(0,0,0))
+            if 0<=r<=90 and 210<=g<=255 and 0<=b<=90:
+                img.putpixel((x,y),(0,0,0))
+    img=img.convert('L').point([0]*150+[1]*(256-150),'1')
+    return img
+
+for i in range(1,13):
+    path = str(i) + '.jpg'
+    im = test(path)
+    path = path.replace('jpg','png')
+    im.save(path)
+
+
+ #-*-coding:utf-8-*-
+# coding:utf-8
+import sys, os
+from PIL import Image, ImageDraw
+
+# 二值数组
+t2val = {}
+
+
+def twoValue(image, G):
+    for y in xrange(0, image.size[1]):
+        for x in xrange(0, image.size[0]):
+            g = image.getpixel((x, y))
+            if g > G:
+                t2val[(x, y)] = 1
+            else:
+                t2val[(x, y)] = 0
+
+
+# 根据一个点A的RGB值，与周围的8个点的RBG值比较，设定一个值N（0 <N <8），当A的RGB值与周围8个点的RGB相等数小于N时，此点为噪点
+# G: Integer 图像二值化阀值
+# N: Integer 降噪率 0 <N <8
+# Z: Integer 降噪次数
+# 输出
+#  0：降噪成功
+#  1：降噪失败
+def clearNoise(image, N, Z):
+    for i in xrange(0, Z):
+        t2val[(0, 0)] = 1
+        t2val[(image.size[0] - 1, image.size[1] - 1)] = 1
+
+        for x in xrange(1, image.size[0] - 1):
+            for y in xrange(1, image.size[1] - 1):
+                nearDots = 0
+                L = t2val[(x, y)]
+                if L == t2val[(x - 1, y - 1)]:
+                    nearDots += 1
+                if L == t2val[(x - 1, y)]:
+                    nearDots += 1
+                if L == t2val[(x - 1, y + 1)]:
+                    nearDots += 1
+                if L == t2val[(x, y - 1)]:
+                    nearDots += 1
+                if L == t2val[(x, y + 1)]:
+                    nearDots += 1
+                if L == t2val[(x + 1, y - 1)]:
+                    nearDots += 1
+                if L == t2val[(x + 1, y)]:
+                    nearDots += 1
+                if L == t2val[(x + 1, y + 1)]:
+                    nearDots += 1
+
+                if nearDots < N:
+                    t2val[(x, y)] = 1
+
+
+def saveImage(filename, size):
+    image = Image.new("1", size)
+    draw = ImageDraw.Draw(image)
+
+    for x in xrange(0, size[0]):
+        for y in xrange(0, size[1]):
+            draw.point((x, y), t2val[(x, y)])
+
+    image.save(filename)
+for i in range(1,12):
+    path =  str(i) + ".png"
+    image = Image.open(path).convert("L")
+    twoValue(image, 100)
+    clearNoise(image, 3, 2)
+    path1 = str(i) + ".jpeg"
+    saveImage(path1, image.size)
+
+
+    #-*-coding:utf-8-*-
+
+from PIL import Image
+import pytesseract
+
+def recognize_captcha(img_path):
+    im = Image.open(img_path)
+    # threshold = 140
+    # table = []
+    # for i in range(256):
+    #     if i < threshold:
+    #         table.append(0)
+    #     else:
+    #         table.append(1)
+    #
+    # out = im.point(table, '1')
+    num = pytesseract.image_to_string(im)
+    return num
+
+
+if __name__ == '__main__':
+    for i in range(1, 12):
+        img_path = str(i) + ".jpeg"
+        res = recognize_captcha(img_path)
+        strs = res.split("\n")
+        if len(strs) >=1:
+            print (strs[0])
+
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+import cv2 as cv
+
+import pytesseract
+
+from PIL import Image
+
+
+
+def recognize_text(image):
+
+    # 边缘保留滤波  去噪
+
+    dst = cv.pyrMeanShiftFiltering(image, sp=10, sr=150)
+
+    # 灰度图像
+
+    gray = cv.cvtColor(dst, cv.COLOR_BGR2GRAY)
+
+    # 二值化
+
+    ret, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
+
+    # 形态学操作   腐蚀  膨胀
+
+    erode = cv.erode(binary, None, iterations=2)
+
+    dilate = cv.dilate(erode, None, iterations=1)
+
+    cv.imshow('dilate', dilate)
+
+    # 逻辑运算  让背景为白色  字体为黑  便于识别
+
+    cv.bitwise_not(dilate, dilate)
+
+    cv.imshow('binary-image', dilate)
+
+    # 识别
+
+    test_message = Image.fromarray(dilate)
+
+    text = pytesseract.image_to_string(test_message)
+
+    print(f'识别结果：{text}')
+
+
+
+
+
+src = cv.imread(r'./test/044.png')
+
+cv.imshow('input image', src)
+
+recognize_text(src)
+
+cv.waitKey(0)
+
+cv.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

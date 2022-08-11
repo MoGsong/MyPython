@@ -1,0 +1,37 @@
+selenium模块的使用
+
+问题：selenium模块和爬虫之间的关系？
+    -便捷获取网站中动态加载的数据
+    -便捷用于模拟登陆
+什么是selenium模块？
+    -基于浏览器自动化的以一个模块
+
+    selenium使用：
+    1.环境安装
+    2.下载一个浏览器的驱动程序：
+        http://chromedriver.storage.goodleapis.com/index.html                http://npm.taobao.org/mirrors/chromedriver/
+        http://npm.taobao.org/mirrors/chromedriver/90.0.4430.24/
+    3.实例化浏览器对象
+
+    -get请求
+    -find标签定位
+    -标签交互send_keys('xx')
+    -执行js程序：execut_script('js_code')
+    -前进，后退：back(),forword()
+    -关闭浏览器：quit()
+
+    iframe #https://www.runoob.com/try/try.php?filename=jqueryui-api-droppable
+    -如过存在的标签处于iframe之中，使用switch_to.frame(id)定位到frame
+    -动作链（拖动）：from selenium.webdriver import ActionChains
+        -实例化一个动作链对象，action = ActionChains(bro)
+        执行方法action.click_and_hold(div)长安点击
+        -action.move_by_offset(17,0).perform() 移动执行
+        -action.release()释放动作链
+
+    -12306 模拟登录：超级鹰
+        -打开登陆界面
+        -selenium截图
+        -裁剪到验证码图片                      (不适用xpath"//*[@id="J-loginImg"]")/html/body/div[2]/div[2]/div[1]/div[2]/div[3]/div/div[4]/img
+            -目的：将图片与模拟登录进行一一对应
+        -使用超级鹰识别
+

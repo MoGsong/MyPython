@@ -1,0 +1,31 @@
+import tensorflow as tf
+# import os
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+tf.compat.v1.disable_eager_execution()   #必须要有
+data1 = tf.constant(6, dtype=tf.dtypes.int32)
+# data2 = tf.constant(2, dtype=tf.dtypes.int32)
+data2 = tf.Variable(2)
+
+dataAdd = tf.add(data1, data2)
+dataMul = tf.multiply(data1, data2)
+dataSub = tf.subtract(data1, data2)
+dataDiv = tf.divide(data1, data2)
+
+dataCopy = tf.compat.v1.assign(data2, dataAdd)   #dataAdd->data2
+
+init = tf.compat.v1.global_variables_initializer()  #变量必须初始化
+with tf.compat.v1.Session() as sess:
+    sess.run(init)              #变量必须初始化
+    print(sess.run(dataAdd))
+    print(sess.run(dataMul))
+    print(sess.run(dataSub))
+    print(sess.run(dataDiv))
+    print('sess.run(dataCopy)', sess.run(dataCopy))  #8->data2
+    print('dataCopy.eval', dataCopy.eval()) #8 + 6 =14->data2
+    print('tf.compat.v1.get_default_session()', tf.compat.v1.get_default_session().run(dataCopy))  #14+6=20->data2
+
+# print(dataAdd)
+# print(dataMul)
+# print(dataSub)
+# print(dataDiv)
+print("end!")

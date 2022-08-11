@@ -1,0 +1,1 @@
+# or '1' = '1  , select * from admin where username ='admin' and password = '' or '1'='1'  ,echo $sql;

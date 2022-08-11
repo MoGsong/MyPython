@@ -1,0 +1,115 @@
+ 模拟登陆
+        -爬取某些用户信息
+    需求：人人网模拟登陆
+        - 点击发起post请求，请求携带登录信息（账号，密码，验证码。。。）  data = {},post(data=data)
+        - 验证码是动态变化的
+    HTTPI协议特性：无状态
+    没有请求到对应数据的原因:发起气球的时候服务端不知道该请求是基于登陆状态下的请求
+    cookie 模拟登录：cookie用来记录客户端的相关状态
+     1.cookie在headers作为关键字中传入，但需要抓包cookie后手动输入
+     2.自动处理：post请求后，服务器创建
+     session会话对象:可以进行请求发送,请求过程中产生cookie则该对象会被自动储存携带到session对象中
+代理：
+作用：
+破解封ip反爬机制
+
+突破自身ip访问限制
+
+隐藏自身真实ip防止被攻击
+
+代理网站：
+快代理,西祠代理,www.goubanjia.com
+USER_AGENTS = [
+    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; AcooBrowser; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+    "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; Acoo Browser; SLCC1; .NET CLR 2.0.50727; Media Center PC 5.0; .NET CLR 3.0.04506)",
+    "Mozilla/4.0 (compatible; MSIE 7.0; AOL 9.5; AOLBuild 4337.35; Windows NT 5.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)",
+    "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
+    "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 2.0.50727; Media Center PC 6.0)",
+    "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; .NET CLR 1.0.3705; .NET CLR 1.1.4322)",
+    "Mozilla/4.0 (compatible; MSIE 7.0b; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; InfoPath.2; .NET CLR 3.0.04506.30)",
+    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN) AppleWebKit/523.15 (KHTML, like Gecko, Safari/419.3) Arora/0.3 (Change: 287 c9dfb30)",
+    "Mozilla/5.0 (X11; U; Linux; en-US) AppleWebKit/527+ (KHTML, like Gecko, Safari/419.3) Arora/0.6",
+    "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.2pre) Gecko/20070215 K-Ninja/2.1.1",
+    "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9) Gecko/20080705 Firefox/3.0 Kapiko/3.0",
+    "Mozilla/5.0 (X11; Linux i686; U;) Gecko/20070322 Kazehakase/0.4.5",
+    "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.8) Gecko Fedora/1.9.0.8-1.fc10 Kazehakase/0.5.6",
+    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/535.20 (KHTML, like Gecko) Chrome/19.0.1036.7 Safari/535.20",
+    "Opera/9.80 (Macintosh; Intel Mac OS X 10.6.8; U; fr) Presto/2.9.168 Version/11.52",
+]
+PROXIES = [
+    {'ip_port': '111.11.228.75:80', 'user_pass': ''},
+    {'ip_port': '120.198.243.22:80', 'user_pass': ''},
+    {'ip_port': '111.8.60.9:8123', 'user_pass': ''},
+    {'ip_port': '101.71.27.120:80', 'user_pass': ''},
+    {'ip_port': '122.96.59.104:80', 'user_pass': ''},
+    {'ip_port': '122.224.249.122:8088', 'user_pass': ''},
+]
+
+
+
+# -*- coding: UTF-8 -*-
+
+'''
+Python 3.x
+无忧代理IP Created on 2018年05月11日
+描述：本DEMO演示了使用爬虫（动态）代理IP请求网页的过程，代码使用了多线程
+逻辑：每隔5秒从API接口获取IP，对于每一个IP开启一个线程去抓取网页源码
+@author: www.data5u.com
+'''
+import requests;
+import time;
+import threading;
+import urllib3;
+
+ips = [];
+
+# 爬数据的线程类
+class CrawlThread(threading.Thread):
+    def __init__(self,proxyip):
+        super(CrawlThread, self).__init__();
+        self.proxyip=proxyip;
+    def run(self):
+        # 开始计时
+        start = time.time();
+        #消除关闭证书验证的警告
+        urllib3.disable_warnings();
+        #使用代理IP请求网址，注意第三个参数verify=False意思是跳过SSL验证（可以防止报SSL错误）
+        html=requests.get(url=targetUrl, proxies={"http" : 'http://' + self.proxyip, "https" : 'https://' + self.proxyip}, verify=False, timeout=15).content.decode()
+        # 结束计时
+        end = time.time();
+        # 输出内容
+        print(threading.current_thread().getName() +  "使用代理IP, 耗时 " + str(end - start) + "毫秒 " + self.proxyip + " 获取到如下HTML内容：\n" + html + "\n*************")
+
+# 获取代理IP的线程类
+class GetIpThread(threading.Thread):
+    def __init__(self,fetchSecond):
+        super(GetIpThread, self).__init__();
+        self.fetchSecond=fetchSecond;
+    def run(self):
+        global ips;
+        while True:
+            # 获取IP列表
+            res = requests.get(apiUrl).content.decode()
+            # 按照\n分割获取到的IP
+            ips = res.split('\n');
+            # 利用每一个IP
+            for proxyip in ips:
+                if proxyip.strip():
+                    # 开启一个线程
+                    CrawlThread(proxyip).start();
+            # 休眠
+            time.sleep(self.fetchSecond);
+
+if __name__ == '__main__':
+    # 这里填写无忧代理IP提供的API订单号（请到用户中心获取）
+    order = "请把这里替换为您的IP提取码";
+    # 获取IP的API接口
+    apiUrl = "http://dynamic.goubanjia.com/dynamic/get/" + order + ".html";
+    # 要抓取的目标网站地址
+    targetUrl = "http://pv.sohu.com/cityjson?ie=utf-8";
+    # 获取IP时间间隔，建议为5秒
+    fetchSecond = 5;
+    # 开始自动获取IP
+    GetIpThread(fetchSecond).start();
+

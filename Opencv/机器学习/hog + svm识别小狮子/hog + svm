@@ -1,0 +1,124 @@
+svm支持向量机是一个分类器 寻找最优超平面 分类 svm line
+""":type:cv2.ml""" 类型注明，方便函数的引用
+
+# 梯度方向 模板 2*3 bin 投影 2*4 模块hog
+# image win(blue) step  block(red) step  cell bin size(green)
+# win 顶层窗口 特征计算单元-》obj
+# win size any( suggetion : 64*128)
+# block  << win size w h /block (wh) 16*16 -->step 8*8滑动
+# block 滑动次数 count = ((64 - 16) / 8+1)*((128-16)/8+1) = 105 水平*竖直
+# cell size 8*8 不可滑动  block = ? cell  ==》16*16 =2*2 = 4 cell
+
+# cell bin  梯度：运算
+# 每个像素-》梯度 ：大小 f 方向 angle
+# 0-360/40 = 9bin
+# 1bin =40 cell -> 360 9bin
+# haar 值 hog 维度 -》完全描述一个obj的所有信息
+# 维度= 105 * 4 *9 =3780   block * cell * bin
+# 梯度 方向 模板 hog == win 每个像素都有一个梯度
+# 特征模板 类似 haar 水平[ 1 0 -1 ]  竖直[[1] [0] [-1]]
+# a = p1*1 + p2*2 +p3*-1 = 相邻像素之差
+# b = 上下像素之差
+# f = 根号下 a*a + b*b
+# angle = arctan(a/b)
+
+# bin 投影 梯度
+# bin 360  9bin 40 只有20°是连续的 另外20关于180对称连续
+# bin1 0-20 180-200
+# ij f a=10 | a=190  0-20 中心 ，投影到了 bin1 上
+# 如果不在中心  25 bin1 bin2 f1=f*f(θ) f2 = f*(1-f(θ))
+# 投影到那个区间就+1 hog
+
+# 计算整体的hog特征 与 cell 复用
+# win的维度
+# cell[0:3] -> bin[0:8]
+# ij cell0 bin0 = f0
+# i+1 j cell0 bin0 =f1
+# sumbin0(f0 +f1+...) = bin0 权重累加
+# cell复用 block = 4 cell
+
+# [3780]hog svm line训练【3780】
+# hog*svm = 门限值 》则为判决目标
+
+
+
+参考代码
+"""
+# 整个过程分为7步：1、Hog参数设置    2、创建Hog    3、svm参数设置与创建    4、计算Hog    5、label    6、训练    7、预测
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+# 1、设置 Hog参数，定义3780维的Hog特征
+PosNum = 820    # 正样本的数量
+NegNum = 1931
+winSize = (64,128)    # win的大小
+blockSize = (16,16)    # block的大小
+blockStep = (8,8)
+cellSize = (8,8)
+binNum = 9
+# 2、创建Hog
+hog = cv2.HOGDescriptor(winSize,blockSize,blockStep,cellSize,binNum)
+# 3、创建svm
+svm = cv2.ml.SVM_create()
+# 4、计算Hog
+featureNum = int(((128-16)/8+1) * ((64-16)/8+1) * 4 * 9)    # 3780维的特征数，计算的是bin的数量，数字为推荐尺寸
+featureArray = np.zeros(((PosNum + NegNum),featureNum),np.float32)   # 装载特征的数组 全样本数行 * 特征维数(3780)列
+labelArray = np.zeros(((PosNum + NegNum), 1), np.int32)   # 装载标签的数组,   注意！！！！如果labelArray报错，那么你应该写成了np.float32
+# svm 是监督学习，学习的是图中的Hog特征
+# 5、设置正负样本标签
+for i in range(PosNum):
+    fileName = 'pos\\' + str(i+1) + '.jpg'
+    img = cv2.imread(fileName)
+    hist = hog.compute(img, (8,8))    # 计算hog特征
+    # 将正样本中的 Hog特征装到featureArray中
+    for j in range(featureNum):
+        featureArray[i,j] = hist[j]    # featureArray中的每一行代表一个3780维的 Hog特征
+    labelArray[i,0] = 1     # 正样本标签设置为 1
+# 处理负样
+for i in range(NegNum):
+    fileName = 'neg\\' + str(i+1) + '.jpg'
+    img = cv2.imread(fileName)
+    hist = hog.compute(img, (8,8))    # 计算hog特征
+    for j in range(featureNum):
+         featureArray[i+PosNum, j] = hist[j]
+    labelArray[i+PosNum, 0] = -1    # 正样本标签设置为 -1
+# 设置svm的属性
+svm.setType(cv2.ml.SVM_C_SVC)
+svm.setKernel(cv2.ml.SVM_LINEAR)
+svm.setC(0.01)
+# 6、训练
+ret = svm.train(featureArray, cv2.ml.ROW_SAMPLE, labelArray)
+print(ret)
+# 7、预测
+alpha = np.zeros((1), np.float32)   # 一维数组
+rho = svm.getDecisionFunction(0,alpha)    # 在SVM的判决中需要用到 rho
+print(rho)
+print(alpha)
+alphaArray = np.zeros((1,1), np.float32)    # 视为参数
+supportVArray = np.zeros((1, featureNum), np.float32)     # 支持向量机的维度
+resultArray = np.zeros((1, featureNum), np.float32)
+alphaArray[0,0] = alpha
+resultArray = -1 * alphaArray * supportVArray
+print(resultArray)
+# 创建 myDetect是为了创建 Hog，detect是其核心
+myDetect = np.zeros((3781), np.float32)
+for i in range(3780):
+    myDetect[i] = resultArray[0, i]
+myDetect[3780] = rho[0]
+# 构建 Hog
+myHog = cv2.HOGDescriptor()
+myHog.setSVMDetector(myDetect)    # 把当前myDtector属性传入Hog
+imgSrc = cv2.imread('OpenCV\\Test2.jpg', 1)    # 读取检测图
+# （8，8）win步长   （32，32）win尺寸   1.05缩放系数    2最小像素范围
+objs = myHog.detectMultiScale(imgSrc, 0, (8,8), (32,32), 1.05, 2)    # 三维信息
+# 起始坐标，和宽度高度放在了objs的最后一维
+x = int(objs[0][0][0])
+y = int(objs[0][0][1])
+w = int(objs[0][0][2])
+h = int(objs[0][0][3])
+# 绘制展示
+cv2.rectangle(imgSrc,(x,y),(x+w,y+h),(255,0,0),2)
+cv2.imshow('dst',imgSrc)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+"""
